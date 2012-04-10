@@ -13,5 +13,6 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = ['README.rdoc', 'LICENSE.rdoc', 'CHANGELOG.rdoc']
   s.add_dependency 'rails_javascript_helpers', '~> 1.4'
   s.add_dependency 'rails', '>= 2.3'
+  s.add_dependency 'writeexcel', '>= 0.6.12'
   s.files = Dir.glob("**/*")
 end
