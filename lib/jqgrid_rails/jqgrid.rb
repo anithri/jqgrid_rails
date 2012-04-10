@@ -132,6 +132,7 @@ module JqGridRails
     # link:: url hash: :name, :url, :class
     # Enables link on link toolbar
     def link_toolbar_add(link)
+      warn link
       enable_link_toolbar unless has_link_toolbar?
       @link_toolbar_options[:links].push(link)
       self

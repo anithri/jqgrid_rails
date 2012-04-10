@@ -11,14 +11,14 @@ module JqGridRails
       'le' => ['<= ?', lambda{|v|v}],
       'gt' => ['> ?', lambda{|v|v}],
       'ge' => ['>= ?', lambda{|v|v}],
-      'bw' => ['ilike ?', lambda{|v| "#{v}%"}],
+      'bw' => ['like ?', lambda{|v| "#{v}%"}],
       'bn' => ['not ilike ?', lambda{|v| "#{v}%"}],
       'in' => ['in ?', lambda{|v| v.split(',').map(&:strip)}],
       'ni' => ['not in ?', lambda{|v| v.split(',').map(&:strip)}],
-      'ew' => ['ilike ?', lambda{|v| "%#{v}"}],
-      'en' => ['not ilike ?', lambda{|v| "%#{v}"}],
-      'cn' => ['ilike ?', lambda{|v| "%#{v}%"}],
-      'nc' => ['not ilike ?', lambda{|v| "%#{v}%"}]
+      'ew' => ['like ?', lambda{|v| "%#{v}"}],
+      'en' => ['not like ?', lambda{|v| "%#{v}"}],
+      'cn' => ['like ?', lambda{|v| "%#{v}%"}],
+      'nc' => ['not like ?', lambda{|v| "%#{v}%"}]
     }
 
     # klass:: ActiveRecord::Base class or ActiveRecord::Relation
