@@ -18,7 +18,8 @@ module JqGridRails
     attr_reader :link_toolbar_options
     # Detached javascript
     attr_reader :detached_javascript
-
+    # Options used for pager toolbar
+    attr_reader :pager_options
 
     # table_id:: DOM ID of table for grid to use
     # args:: Hash of {jqGrid options}[http://www.trirand.com/jqgridwiki/doku.php?id=wiki:options]
