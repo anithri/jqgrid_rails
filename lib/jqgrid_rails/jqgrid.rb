@@ -43,8 +43,14 @@ module JqGridRails
       end
       @table_id = table_id.is_a?(String) ? table_id.gsub('#', '') : table_id
       @options = defaults.merge(args)
-      @pager_options = {:edit => false, :add => false, :del => false}
       @pager_button_list = []
+      @pager_options = {}
+      @pager_options[:core] = {:edit => false, :add => false, :del => false}
+      @pager_options[:edit] = {}
+      @pager_options[:add] = {}
+      @pager_options[:del] = {}
+      @pager_options[:search] = {}
+      @pager_options[:view] = {}
       if(t_args = @options.delete(:filter_toolbar))
         enable_filter_toolbar(t_args.is_a?(Hash) ? t_args : nil)
       end
@@ -236,7 +242,8 @@ module JqGridRails
       end
       if(has_pager?)
         pager_buttons = @pager_button_list.each {|b| output << build_pager_button(b)}.join("")
-        output << "jQuery(#{convert_dom_id(@table_id)}).jqGrid('navGrid', #{format_type_to_js(@options[:pager])}, #{format_type_to_js(@pager_options)})#{pager_buttons};"
+        all_pager_options = @pager_options.values.map{|v| "#{format_type_to_js(v)}"}.join(", ")
+        output << "jQuery(#{convert_dom_id(@table_id)}).jqGrid('navGrid', #{format_type_to_js(@options[:pager])}, #{all_pager_options})#{pager_buttons};"
       end
       if(has_filter_toolbar?)
         output << "jQuery(#{convert_dom_id(@table_id)}).jqGrid('filterToolbar', #{format_type_to_js(@filter_toolbar_options)});\n"
