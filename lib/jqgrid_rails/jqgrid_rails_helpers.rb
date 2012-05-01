@@ -212,6 +212,11 @@ jQuery('<div class="#{(classes + Array(url_hash[:class])).compact.join(' ')}" />
 EOS
     end
 
+    def build_pager_button(button_hash)
+      button_options = format_type_to_js(button_hash)
+      %Q|.navButtonAdd(#{format_type_to_js(@options[:pager])},button_options)|
+    end
+
     # options_hash:: Hash of options
     # Inserts callbacks in any applicable values
     def scrub_options_hash(options_hash)
