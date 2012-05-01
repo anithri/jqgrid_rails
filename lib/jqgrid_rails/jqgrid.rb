@@ -45,11 +45,9 @@ module JqGridRails
       @options = defaults.merge(args)
       @pager_options = {}
       @pager_options[:core] = {:edit => false, :add => false, :del => false}
-      @pager_options[:edit] = {}
-      @pager_options[:add] = {}
-      @pager_options[:del] = {}
-      @pager_options[:search] = {}
-      @pager_options[:view] = {}
+
+      [:edit, :add, :del, :search, :view].each {|e| @pager_options[e] = {}}
+
       if(t_args = @options.delete(:filter_toolbar))
         enable_filter_toolbar(t_args.is_a?(Hash) ? t_args : nil)
       end
