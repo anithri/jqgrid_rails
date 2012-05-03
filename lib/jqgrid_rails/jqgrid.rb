@@ -239,7 +239,7 @@ module JqGridRails
         output << "for(var i = 0; i < jqgrid_local_data.get(#{convert_dom_id(@table_id)}).length; i++){ jQuery(#{convert_dom_id(@table_id)}).jqGrid('addRowData', i+1, jqgrid_local_data.get(#{convert_dom_id(@table_id)})[i]); }\n"
       end
       if(has_pager?)
-        pager_buttons = @pager_button_list.each {|b| build_pager_button(b)}.join("")
+        pager_buttons = @pager_button_list.map{|b| build_pager_button(b)}.join("")
         all_pager_options = @pager_options.values.map{|v| "#{format_type_to_js(v)}"}.join(", ")
         output << "jQuery(#{convert_dom_id(@table_id)}).jqGrid('navGrid', #{format_type_to_js(@options[:pager])}, #{all_pager_options})#{pager_buttons};"
       end

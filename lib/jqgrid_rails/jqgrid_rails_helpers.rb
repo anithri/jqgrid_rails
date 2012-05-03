@@ -214,7 +214,7 @@ EOS
 
     def build_pager_button(button_hash)
       button_options = format_type_to_js(button_hash)
-      %Q|.navButtonAdd(#{format_type_to_js(@options[:pager])},button_options)|
+      ".navButtonAdd(#{format_type_to_js(@options[:pager])},#{button_options})"
     end
 
     # options_hash:: Hash of options
