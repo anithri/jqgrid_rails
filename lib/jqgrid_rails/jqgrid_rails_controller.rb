@@ -13,8 +13,10 @@ module JqGridRails
       'ge' => ['>= ?', lambda{|v|v}],
       'bw' => ['like ?', lambda{|v| "#{v}%"}],
       'bn' => ['not ilike ?', lambda{|v| "#{v}%"}],
-      'in' => ['in ?', lambda{|v| v.split(',').map(&:strip)}],
-      'ni' => ['not in ?', lambda{|v| v.split(',').map(&:strip)}],
+      #'in' => ['in (?)', lambda{|v| v.split(',').map(&:strip)}], 
+      #'ni' => ['not in (?)', lambda{|v| v.split(',').map(&:strip)}],
+      'in' => ['in (?)', lambda{|v| v.split(',').map(&:strip)}], #surround with parens for mysql
+      'ni' => ['not in (?)', lambda{|v| v.split(',').map(&:strip)}], #surroung with parens for mysql
       'ew' => ['like ?', lambda{|v| "%#{v}"}],
       'en' => ['not like ?', lambda{|v| "%#{v}"}],
       'cn' => ['like ?', lambda{|v| "%#{v}%"}],
