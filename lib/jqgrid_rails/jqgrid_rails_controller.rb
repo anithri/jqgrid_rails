@@ -1,6 +1,6 @@
 module JqGridRails
   module Controller
-    
+
     # These are the valid search operators jqgrid uses
     # and the database translations for them. We use closures
     # for the value so we can modify the string if we see fit
@@ -12,8 +12,9 @@ module JqGridRails
       'gt' => ['> ?', lambda{|v|v}],
       'ge' => ['>= ?', lambda{|v|v}],
       'bw' => ['like ?', lambda{|v| "#{v}%"}],
-      'bn' => ['not ilike ?', lambda{|v| "#{v}%"}],
-      #'in' => ['in (?)', lambda{|v| v.split(',').map(&:strip)}], 
+      'bn' => ['not like ?', lambda{|v| "#{v}%"}],
+      #'bn' => ['not ilike ?', lambda{|v| "#{v}%"}],
+      #'in' => ['in (?)', lambda{|v| v.split(',').map(&:strip)}],
       #'ni' => ['not in (?)', lambda{|v| v.split(',').map(&:strip)}],
       'in' => ['in (?)', lambda{|v| v.split(',').map(&:strip)}], #surround with parens for mysql
       'ni' => ['not in (?)', lambda{|v| v.split(',').map(&:strip)}], #surroung with parens for mysql
@@ -73,11 +74,13 @@ module JqGridRails
     # fields:: Array or Hash map of fields
     # Returns proper field if mapped and ensures field is valid
     def discover_field(given, fields)
+      warn "discover_field:given: #{given.inspect}"
+      warn "discover_field:fields: #{fields.inspect}"
       given = JqGridRails.unescape(given)
       col = nil
       case fields
         when Hash
-          col = fields.keys.detect{|key| key.to_s == given}
+          col = fields.keys.detect{|key| key.to_s == given || fields[key][:alias] == given}
         when Array
           col = given if fields.map(&:to_s).include?(given)
         else
@@ -130,7 +133,7 @@ module JqGridRails
         klass
       end
     end
-    
+
     # klass:: ActiveRecord::Base class or ActiveRecord::Relation
     # params:: Request params
     # fields:: Fields used within grid
@@ -181,9 +184,9 @@ module JqGridRails
     # fields:: Fields used within grid
     # Applies any filter restrictions to result set
     #
-    # TODO: Currently this only supports AND'ing the filters. Need 
+    # TODO: Currently this only supports AND'ing the filters. Need
     # to add support for grabbing groupOp from parameters and using it for
-    # joining query parameters. 
+    # joining query parameters.
     def apply_filtering(klass, params, fields)
       rel = klass
       havings = []
@@ -191,6 +194,7 @@ module JqGridRails
         filters = JSON.load(params[:filters])
         filters['rules'].each do |filter|
           field = discover_field(filter['field'].gsub('___', '.'), fields)
+          logger.warn field
           oper = filter['op']
           raise ArgumentError.new("Invalid search operator received: #{oper}") unless SEARCH_OPERS.keys.include?(oper)
           data = filter['data']
@@ -198,6 +202,7 @@ module JqGridRails
             havings << ["#{fields[field][:having]} #{SEARCH_OPERS[oper].first}", SEARCH_OPERS[oper].last.call(data)]
           end
           if(defined?(ActiveRecord::Relation) && rel.is_a?(ActiveRecord::Relation))
+            warn "TOP"
             if(!fields.is_a?(Hash) || fields[field][:having].blank? || fields[field][:where])
               rel = rel.where([
                 "#{database_name_by_string(field, klass, fields)} #{SEARCH_OPERS[oper].first}",
@@ -206,6 +211,7 @@ module JqGridRails
             end
           else
             if(!fields.is_a?(Hash) || fields[field][:having].blank? || fields[field][:where])
+              warn "BOTTOM"
               rel = rel.scoped(
                 :conditions => [
                   "#{database_name_by_string(field, klass, fields)} #{SEARCH_OPERS[oper].first}",
@@ -266,10 +272,12 @@ module JqGridRails
       end
       res
     end
-    
+
     private
 
     def database_name_by_string(string, klass, fields)
+      logger.warn string.inspect
+      logger.warn fields.inspect
       if(fields.is_a?(Hash) && fields[string].try(:[], :where))
         fields[string][:where]
       else
