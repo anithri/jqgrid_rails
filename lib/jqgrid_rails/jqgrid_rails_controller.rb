@@ -74,8 +74,6 @@ module JqGridRails
     # fields:: Array or Hash map of fields
     # Returns proper field if mapped and ensures field is valid
     def discover_field(given, fields)
-      warn "discover_field:given: #{given.inspect}"
-      warn "discover_field:fields: #{fields.inspect}"
       given = JqGridRails.unescape(given)
       col = nil
       case fields
@@ -194,7 +192,6 @@ module JqGridRails
         filters = JSON.load(params[:filters])
         filters['rules'].each do |filter|
           field = discover_field(filter['field'].gsub('___', '.'), fields)
-          logger.warn field
           oper = filter['op']
           raise ArgumentError.new("Invalid search operator received: #{oper}") unless SEARCH_OPERS.keys.include?(oper)
           data = filter['data']
@@ -202,7 +199,6 @@ module JqGridRails
             havings << ["#{fields[field][:having]} #{SEARCH_OPERS[oper].first}", SEARCH_OPERS[oper].last.call(data)]
           end
           if(defined?(ActiveRecord::Relation) && rel.is_a?(ActiveRecord::Relation))
-            warn "TOP"
             if(!fields.is_a?(Hash) || fields[field][:having].blank? || fields[field][:where])
               rel = rel.where([
                 "#{database_name_by_string(field, klass, fields)} #{SEARCH_OPERS[oper].first}",
@@ -211,7 +207,6 @@ module JqGridRails
             end
           else
             if(!fields.is_a?(Hash) || fields[field][:having].blank? || fields[field][:where])
-              warn "BOTTOM"
               rel = rel.scoped(
                 :conditions => [
                   "#{database_name_by_string(field, klass, fields)} #{SEARCH_OPERS[oper].first}",
@@ -276,8 +271,6 @@ module JqGridRails
     private
 
     def database_name_by_string(string, klass, fields)
-      logger.warn string.inspect
-      logger.warn fields.inspect
       if(fields.is_a?(Hash) && fields[string].try(:[], :where))
         fields[string][:where]
       else
